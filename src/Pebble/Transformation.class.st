@@ -189,7 +189,7 @@ Transformation >> asBlock2 [
 { #category : 'combining' }
 Transformation >> asOrderedCollection [
 
-	^ self as: OrderedCollection
+	^ self as: [ OrderedCollection new ]
 ]
 
 { #category : 'compiling' }
