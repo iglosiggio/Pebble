@@ -49,7 +49,7 @@ Transformation class >> compilation [
 ]
 
 { #category : 'baselines' }
-Transformation class >> compilation2 [
+Transformation class >> compilationInlining [
 
 	<script>
 	| transformation code |
@@ -57,13 +57,13 @@ Transformation class >> compilation2 [
 		flatCollect: #methods)
 		collect: #numArgs)
 		sum)
-		asBlock2.
+		asBlockInlining.
 	code := [ transformation value: Smalltalk allClasses ].
 	self inform: (code benchFor: 10 seconds) asString
 ]
 
 { #category : 'baselines' }
-Transformation class >> compilation2WithBlocks [
+Transformation class >> compilationInliningWithBlocks [
 
 	<script>
 	| transformation code |
@@ -71,7 +71,7 @@ Transformation class >> compilation2WithBlocks [
 		flatCollect: [ :e | e methods ])
 		collect: [ :e | e numArgs ])
 		sum)
-		asBlock2.
+		asBlockInlining.
 	code := [ transformation value: Smalltalk allClasses ].
 	self inform: (code benchFor: 10 seconds) asString
 ]
@@ -153,6 +153,32 @@ Transformation class >> interpretWithBlocks [
 	self inform: (code benchFor: 10 seconds) asString
 ]
 
+{ #category : 'baselines' }
+Transformation class >> naive [
+
+	<script>
+	| transformation code |
+	transformation := ((Transformation new
+		flatCollect: #methods)
+		collect: #numArgs)
+		sum.
+	code := [ transformation naiveValue: Smalltalk allClasses ].
+	self inform: (code benchFor: 10 seconds) asString
+]
+
+{ #category : 'baselines' }
+Transformation class >> naiveWithBlocks [
+
+	<script>
+	| transformation code |
+	transformation := ((Transformation new
+		flatCollect: [ :e | e methods ])
+		collect: [ :e | e numArgs ])
+		sum.
+	code := [ transformation naiveValue: Smalltalk allClasses ].
+	self inform: (code benchFor: 10 seconds) asString
+]
+
 { #category : 'combining' }
 Transformation >> afterAddingDescriptor: anOperationDescriptor [
 
@@ -178,10 +204,10 @@ Transformation >> asBlock [
 		  valueWithReceiver: nil
 ]
 
-{ #category : 'compiling' }
-Transformation >> asBlock2 [
+{ #category : 'compiling w/inlines' }
+Transformation >> asBlockInlining [
 
-	^ (nil class compiler ast: self ast2)
+	^ (nil class compiler ast: self astInlining)
 		compile
 		valueWithReceiver: nil
 ]
@@ -243,7 +269,27 @@ Transformation >> ast [
 ]
 
 { #category : 'compiling' }
-Transformation >> ast2 [
+Transformation >> astForOpAt: opIdx [
+
+	| callback element acc next |
+	description size < opIdx ifTrue: [
+		^ RBVariableNode named: #__opID ].
+
+	callback := RBVariableNode named: #__op , opIdx printString.
+	element := (RBVariableNode named: #__e, opIdx printString).
+	acc := RBVariableNode named: #__acc , opIdx printString.
+	next := (self astForOpAt: opIdx + 1).
+	^ RBBlockNode
+		arguments: { element }
+		body: ((description at: opIdx)
+			compileWithCallback: callback
+			element: element
+			acc: acc
+			pushingResultsTo: next) asSequenceNode.
+]
+
+{ #category : 'compiling w/inlines' }
+Transformation >> astInlining [
 
 	| requiresAcc perInvocationVariables statements invocationStatements |
 	requiresAcc := (description withIndexCollect: [ :e :i | i -> e ])
@@ -265,7 +311,7 @@ Transformation >> ast2 [
 	invocationStatements add: (RBMessageNode
 		receiver: (RBVariableNode named: #aCollection)
 		selector: #do:
-		arguments: { self ast2ForOpAt: 1 }).
+		arguments: { self astInliningForOpAt: 1 }).
 	invocationStatements add: (RBVariableNode named: #result).
 
 	statements := { (RBReturnNode value:
@@ -280,8 +326,8 @@ Transformation >> ast2 [
 		body: (RBSequenceNode statements: statements)
 ]
 
-{ #category : 'accessing' }
-Transformation >> ast2ForOpAt: opIdx [
+{ #category : 'compiling w/inlines' }
+Transformation >> astInliningForOpAt: opIdx [
 
 	| callbackPrefix element acc next |
 	description size < opIdx ifTrue: [
@@ -294,31 +340,11 @@ Transformation >> ast2ForOpAt: opIdx [
 	callbackPrefix := #__op , opIdx printString.
 	element := RBVariableNode named: #__e, opIdx printString.
 	acc := RBVariableNode named: #__acc , opIdx printString.
-	next := (self ast2ForOpAt: opIdx + 1).
+	next := (self astInliningForOpAt: opIdx + 1).
 	^ RBBlockNode
 		arguments: { element }
 		body: ((description at: opIdx)
 			compileWithCallbackNamespace: callbackPrefix
-			element: element
-			acc: acc
-			pushingResultsTo: next) asSequenceNode.
-]
-
-{ #category : 'compiling' }
-Transformation >> astForOpAt: opIdx [
-
-	| callback element acc next |
-	description size < opIdx ifTrue: [
-		^ RBVariableNode named: #__opID ].
-
-	callback := RBVariableNode named: #__op , opIdx printString.
-	element := (RBVariableNode named: #__e, opIdx printString).
-	acc := RBVariableNode named: #__acc , opIdx printString.
-	next := (self astForOpAt: opIdx + 1).
-	^ RBBlockNode
-		arguments: { element }
-		body: ((description at: opIdx)
-			compileWithCallback: callback
 			element: element
 			acc: acc
 			pushingResultsTo: next) asSequenceNode.
