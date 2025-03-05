@@ -54,3 +54,9 @@ CollectTransformationDescriptor >> evalOnValue: anElement pushingResultsTo: aBlo
 
 	aBlock value: (block value: anElement)
 ]
+
+{ #category : 'naive interpreting' }
+CollectTransformationDescriptor >> naiveValue: aCollection [
+
+	^ aCollection collect: block
+]

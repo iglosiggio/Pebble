@@ -52,3 +52,9 @@ FlatCollectTransformationDescriptor >> evalOnValue: anElement pushingResultsTo: 
 
 	(block value: anElement) do: aBlock
 ]
+
+{ #category : 'naive interpreting' }
+FlatCollectTransformationDescriptor >> naiveValue: aCollection [
+
+	^ aCollection flatCollect: block
+]

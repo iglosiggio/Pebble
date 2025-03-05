@@ -5,11 +5,6 @@ Class {
 	#package : 'Pebble'
 }
 
-{ #category : 'as yet unclassified' }
-StatelessTransformationDescriptor >> astForCallback [
-	^ self subclassResponsibility
-]
-
 { #category : 'compiling' }
 StatelessTransformationDescriptor >> compileWithCallback: callback element: element acc: acc pushingResultsTo: continuation [
 

@@ -92,3 +92,13 @@ UniqueTransformationDescriptor >> initialState [
 
 	^ Set new
 ]
+
+{ #category : 'naive interpreting' }
+UniqueTransformationDescriptor >> naiveValue: aCollection [
+
+	^ (aCollection
+		inject: OrderedDictionary new
+		into: [ :seen :v |
+			seen at: v ifAbsentPut: [ v ].
+			seen ]) keys
+]

@@ -32,6 +32,12 @@ TransformationDescriptor >> astAfterApplying: arguments on: aBlockAst  withNames
 	^ blockAst body.
 ]
 
+{ #category : 'compiling' }
+TransformationDescriptor >> astForCallback [
+
+	^ self subclassResponsibility
+]
+
 { #category : 'ast manipulation' }
 TransformationDescriptor >> astForCallback: aBlock [
 
@@ -108,6 +114,12 @@ TransformationDescriptor >> compileWithCallbackNamespace: callback element: elem
 
 { #category : 'interpreting' }
 TransformationDescriptor >> isExecutable [
+
+	self subclassResponsibility
+]
+
+{ #category : 'naive interpreting' }
+TransformationDescriptor >> naiveValue: aCollection [
 
 	self subclassResponsibility
 ]

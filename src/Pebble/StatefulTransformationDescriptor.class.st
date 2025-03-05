@@ -14,18 +14,15 @@ StatefulTransformationDescriptor >> asExecutor [
 		yourself.
 ]
 
-{ #category : 'as yet unclassified' }
-StatefulTransformationDescriptor >> astForCallback [
-	^ self subclassResponsibility
-]
-
-{ #category : 'as yet unclassified' }
+{ #category : 'compiling' }
 StatefulTransformationDescriptor >> astForInitialValue [
+
 	^ self subclassResponsibility
 ]
 
-{ #category : 'as yet unclassified' }
-StatefulTransformationDescriptor >> astForInitialValueWithPrefix: aPrefix [ 
+{ #category : 'compiling w/inlines' }
+StatefulTransformationDescriptor >> astForInitialValueWithPrefix: aPrefix [
+
 	^ self subclassResponsibility
 ]
 

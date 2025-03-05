@@ -79,6 +79,12 @@ InjectIntoTransformationDescriptor >> initialState [
 	^ init value
 ]
 
+{ #category : 'naive interpreting' }
+InjectIntoTransformationDescriptor >> naiveValue: aCollection [
+
+	^ aCollection inject: init value into: update
+]
+
 { #category : 'initialization' }
 InjectIntoTransformationDescriptor >> update: aCombiningBlock [
 

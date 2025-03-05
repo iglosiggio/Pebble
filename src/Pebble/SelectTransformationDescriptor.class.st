@@ -67,3 +67,9 @@ SelectTransformationDescriptor >> evalOnValue: anElement pushingResultsTo: aBloc
 
 	(block value: anElement) ifTrue: [ aBlock value: anElement ]
 ]
+
+{ #category : 'naive interpreting' }
+SelectTransformationDescriptor >> naiveValue: aCollection [
+
+	^ aCollection select: block
+]

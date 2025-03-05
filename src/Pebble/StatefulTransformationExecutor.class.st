@@ -10,6 +10,12 @@ Class {
 }
 
 { #category : 'compiling' }
+StatefulTransformationExecutor >> astForCallback [
+
+	self shouldNotImplement
+]
+
+{ #category : 'compiling' }
 StatefulTransformationExecutor >> compileWithCallback: callback element: value acc: acc pushingResultsTo: continuation [
 
 	self shouldNotImplement
@@ -40,6 +46,12 @@ StatefulTransformationExecutor >> evalOnValue: anElement withPreviousValue: aSta
 StatefulTransformationExecutor >> isExecutable [
 
 	^ true
+]
+
+{ #category : 'naive interpreting' }
+StatefulTransformationExecutor >> naiveValue: aCollection [
+
+	self shouldNotImplement
 ]
 
 { #category : 'accessing' }

@@ -362,6 +362,12 @@ Transformation >> inject: initialValue into: aCombiningBlock [
 	^ self afterAddingDescriptor: descriptor
 ]
 
+{ #category : 'naive interpreting' }
+Transformation >> naiveValue: aCollection [
+
+	^ description inject: aCollection into: [ :acc :v | v naiveValue: acc ]
+]
+
 { #category : 'combining' }
 Transformation >> select: aBlock [
 
